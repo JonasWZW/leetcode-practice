@@ -1,0 +1,245 @@
+package algo.backtrack;
+
+
+import javax.swing.plaf.synth.ColorType;
+import java.util.*;
+import java.util.zip.Adler32;
+
+public class CombinationAlgo {
+    List<List<Integer>> ans = new ArrayList<List<Integer>>();
+    LinkedList<Integer> path = new LinkedList<>();
+
+    /**
+     * 给定两个整数 n 和 k，返回范围 [1, n] 中所有可能的 k 个数的组合。
+     * 你可以按 任何顺序 返回答案。
+     */
+    public List<List<Integer>> combine(int n, int k) {
+        if (n == 0) return ans;
+        travel1(n, k, 1);
+        return ans;
+    }
+
+    public void travel1(int n, int k, int startIndex) {
+        if (k == path.size()) {
+            ans.add(new ArrayList<>(path));
+            return;
+        }
+        for (int i = startIndex; i <= n - (k - path.size()) + 1; i++) {
+            path.add(i);
+//            i++;
+            travel1(n, k, i + 1);
+//            i--;
+            path.removeLast();
+        }
+    }
+
+    /**
+     * 找出所有相加之和为 n 的 k 个数的组合，且满足下列条件：
+     * <p>
+     * 只使用数字1到9
+     * 每个数字 最多使用一次
+     * 返回 所有可能的有效组合的列表 。该列表不能包含相同的组合两次，组合可以以任何顺序返回。
+     */
+    public List<List<Integer>> combinationSum3(int k, int n) {
+        travel3(k, n, 1);
+        return ans;
+    }
+
+    private void travel3(int k, int sum, int startIndex) {
+        if (sum == 0 && path.size() == k) {
+            ans.add(new ArrayList<>(path));
+            return;
+        }
+        if (sum < 0 || path.size() > k) {
+            return;
+        }
+        for (int i = startIndex; i <= 9; i++) {
+            sum -= i;
+            path.add(i);
+            travel3(k, sum, i + 1);
+            path.removeLast();
+            sum += i;
+        }
+    }
+
+    List<String> ansLetter = new ArrayList<>();
+    StringBuilder sb = new StringBuilder();
+    HashMap<Character, String> phoneLetterTable = new HashMap<>();
+
+    public List<String> letterCombinations(String digits) {
+        if (digits.length() == 0)
+            return ansLetter;
+        //"abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"
+        phoneLetterTable.put('2', "abc");
+        phoneLetterTable.put('3', "def");
+        phoneLetterTable.put('4', "ghi");
+        phoneLetterTable.put('5', "jkl");
+        phoneLetterTable.put('6', "mno");
+        phoneLetterTable.put('7', "pqrs");
+        phoneLetterTable.put('8', "tuv");
+        phoneLetterTable.put('9', "wxyz");
+        travelLetter(digits, phoneLetterTable, 0);
+        return ansLetter;
+    }
+
+    public void travelLetter(String digits, Map<Character, String> table, int startIndex) {
+        if (sb.length() == digits.length()) {
+            ansLetter.add(sb.toString());
+            return;
+        }
+        String letters = table.get(digits.charAt(startIndex));
+        for (int i = 0; i < letters.length(); i++) {
+            sb.append(String.valueOf(letters.charAt(i)));
+            travelLetter(digits, table, startIndex + 1);
+            sb.deleteCharAt(sb.length() - 1);
+        }
+
+    }
+
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        travelSum(candidates, target, 0, 0);
+        return ans;
+    }
+
+    private void travelSum(int[] candidates, int target, int sum, int startIndex) {
+        if (target == sum) {
+            ans.add(new ArrayList<>(path));
+            return;
+        }
+        if (target < sum)
+            return;
+
+        for (int i = startIndex; i < candidates.length; i++) {
+            path.add(candidates[i]);
+            travelSum(candidates, target, sum + candidates[i], i);
+            path.removeLast();
+        }
+    }
+
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        boolean[] used = new boolean[candidates.length];
+        Arrays.sort(candidates);
+        travelSum2(candidates, target, 0, 0, used);
+        return ans;
+    }
+
+    private void travelSum2(int[] candidates, int target, int sum, int startIndex, boolean[] used) {
+        if (sum == target) {
+            ans.add(new ArrayList<>(path));
+            return;
+        }
+        if (sum > target)
+            return;
+
+        for (int i = startIndex; i < candidates.length; i++) {
+            if (i > 0 && candidates[i] == candidates[i - 1] && !used[i - 1]) {
+                continue;
+            }
+            used[i] = true;
+            path.add(candidates[i]);
+            sum += candidates[i];
+            travelSum2(candidates, target, sum, i + 1, used);
+            sum -= candidates[i];
+            path.removeLast();
+            used[i] = false;
+        }
+    }
+
+    List<List<String>> partitionList = new ArrayList<>();
+    LinkedList<String> partitionPath = new LinkedList<>();
+
+    /**
+     * 给你一个字符串 s，请你将 s 分割成一些 子串，使每个子串都是 回文串 。返回 s 所有可能的分割方案。
+     * 示例 1：
+     * <p>
+     * 输入：s = "aab"
+     * 输出：[["a","a","b"],["aa","b"]]
+     * 示例 2：
+     * <p>
+     * 输入：s = "a"
+     * 输出：[["a"]]
+     */
+    public List<List<String>> partition(String s) {
+        travelPartition(s, 0);
+
+        return partitionList;
+    }
+
+    public void travelPartition(String s, int startIndex) {
+        if (startIndex >= s.length()) {
+            partitionList.add(new ArrayList<>(partitionPath));
+            return;
+        }
+        for (int i = startIndex; i < s.length(); i++) {
+            if (!isPalindromic(s, startIndex, i)) {
+                continue;
+            }
+            partitionPath.add(s.substring(startIndex, i + 1));
+            travelPartition(s, i + 1);
+            partitionPath.removeLast();
+        }
+    }
+
+    public boolean isPalindromic(String s, int left, int right) {
+        while (left <= right) {
+            if (s.charAt(left) != s.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+
+
+    public List<String> restoreIpAddresses(String s) {
+        if (s.length() < 4) return ansLetter;
+        travelIp(s, 0);
+        return ansLetter;
+    }
+
+    private void travelIp(String s, int startIndex) {
+        if (path.size() == 4 && startIndex >= s.length()) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < path.size(); i++) {
+                sb.append(path.get(i)).append(".");
+            }
+            sb.deleteCharAt(sb.length() - 1);
+            ansLetter.add(sb.toString());
+        }
+        if (path.size() > 4 || startIndex > s.length()) {
+            return;
+        }
+
+        for (int i = startIndex; i < s.length(); i++) {
+            //例如："0.1.2.201" 和 "192.168.1.1" 是 有效 IP 地址，
+            //但是 "0.011.255.245"、"192.168.1.312" 和 "192.168@1.1" 是 无效 IP 地址
+
+//            if (i == 0 && s.charAt(i) == '0') {
+//                continue;
+//            }
+
+            if (!isIpv4Dot(s, startIndex, i)) {
+                continue;
+            }
+            path.add(Integer.valueOf(s.substring(startIndex, i + 1)));
+            travelIp(s, i + 1);
+            path.removeLast();
+        }
+    }
+
+    public boolean isIpv4Dot(String s, int left, int right) {
+        if (s.charAt(left) == '0' && right != left) {
+            return false;
+        }
+        if (right - left >= 3) {
+            return false;
+        }
+        int num = Integer.parseInt(s.substring(left, right + 1));
+        if (num > 255) {
+            return false;
+        }
+        return true;
+    }
+
+}
