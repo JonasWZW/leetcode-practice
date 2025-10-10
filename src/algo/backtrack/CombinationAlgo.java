@@ -1,6 +1,7 @@
 package algo.backtrack;
 
 
+import java.lang.reflect.Member;
 import java.util.*;
 
 public class CombinationAlgo {
@@ -396,6 +397,107 @@ public class CombinationAlgo {
         }
     }
 
+    /**
+     * 输入：tickets = [["MUC","LHR"],["JFK","MUC"],["SFO","SJC"],["LHR","SFO"]]
+     * 输出：["JFK","MUC","LHR","SFO","SJC"]
+     */
+    List<String> res;
+    LinkedList<String> pathX = new LinkedList<>();
+    boolean flag = false;
+
+    // 超出时间限制了。后续研究欧拉通路
+    public List<String> findItinerary(List<List<String>> tickets) {
+        boolean[] used = new boolean[tickets.size()];
+        tickets.sort((a, b) -> {
+            return a.get(1).compareTo(b.get(1));
+        });
+        pathX.add("JFK");
+        travelItinerary(tickets, used);
+        return res;
+    }
+
+    private void travelItinerary(List<List<String>> tickets, boolean[] used) {
+        if (flag) {
+            return;
+        }
+        if (pathX.size() == tickets.size() + 1) {
+            res = new ArrayList<>(pathX);
+            flag = true;
+            return;
+        }
+        for (int i = 0; i < tickets.size(); i++) {
+            if (flag) {
+                return;
+            }
+            List<String> tuple = tickets.get(i);
+            if (!used[i] && tuple.get(0).equals(pathX.getLast())) {
+                pathX.add(tuple.get(1));
+                used[i] = true;
+                travelItinerary(tickets, used);
+                used[i] = false;
+                pathX.removeLast();
+            }
+        }
+    }
+
+    char[][] matrix;
+
+    public List<List<String>> solveNQueens(int n) {
+        matrix = new char[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                matrix[i][j] = '.';
+            }
+        }
+        travelNQueens(0, n);
+        return partitionList;
+    }
+
+    private void travelNQueens(int row, int n) {
+        if (row == n) {
+            partitionList.add(ArrayToList(matrix));
+            return;
+        }
+        for (int col = 0; col < n; col++) {
+            if (isValidNQueen(row, col, matrix)) {
+                matrix[row][col] = 'Q';
+                travelNQueens(row + 1, n);
+                matrix[row][col] = '.';
+            }
+        }
+    }
+
+    private boolean isValidNQueen(int row, int col, char[][] matrix) {
+        for (int i = 0; i < row; i++) {
+            if (matrix[i][col] == 'Q') {
+                return false;
+            }
+        }
+        for (int i = row, j = col; i >= 0 && j >= 0; i--, j--) {
+            if (matrix[i][j] == 'Q') {
+                return false;
+            }
+        }
+
+        for (int i = row, j = col; i >= 0 && j < matrix.length; i--, j++) {
+            if (matrix[i][j] == 'Q') {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private List<String> ArrayToList(char[][] matrix) {
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < matrix.length; i++) {
+            StringBuilder sb = new StringBuilder();
+            for (int j = 0; j < matrix.length; j++) {
+                sb.append(matrix[i][j]);
+            }
+            list.add(sb.toString());
+        }
+        return list;
+    }
 
     List<List<Integer>> ans = new ArrayList<List<Integer>>();
     LinkedList<Integer> path = new LinkedList<>();
