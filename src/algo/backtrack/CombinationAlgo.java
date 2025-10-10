@@ -1,13 +1,9 @@
 package algo.backtrack;
 
 
-import javax.swing.plaf.synth.ColorType;
 import java.util.*;
-import java.util.zip.Adler32;
 
 public class CombinationAlgo {
-    List<List<Integer>> ans = new ArrayList<List<Integer>>();
-    LinkedList<Integer> path = new LinkedList<>();
 
     /**
      * 给定两个整数 n 和 k，返回范围 [1, n] 中所有可能的 k 个数的组合。
@@ -62,9 +58,6 @@ public class CombinationAlgo {
         }
     }
 
-    List<String> ansLetter = new ArrayList<>();
-    StringBuilder sb = new StringBuilder();
-    HashMap<Character, String> phoneLetterTable = new HashMap<>();
 
     public List<String> letterCombinations(String digits) {
         if (digits.length() == 0)
@@ -145,8 +138,6 @@ public class CombinationAlgo {
         }
     }
 
-    List<List<String>> partitionList = new ArrayList<>();
-    LinkedList<String> partitionPath = new LinkedList<>();
 
     /**
      * 给你一个字符串 s，请你将 s 分割成一些 子串，使每个子串都是 回文串 。返回 s 所有可能的分割方案。
@@ -242,4 +233,177 @@ public class CombinationAlgo {
         return true;
     }
 
+    /**
+     * 给你一个整数数组 nums ，数组中的元素 互不相同 。返回该数组所有可能的子集（幂集）。
+     * 解集 不能 包含重复的子集。你可以按 任意顺序 返回解集。
+     * <p>
+     * 示例 1：
+     * 输入：nums = [1,2,3]
+     * 输出：[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+     * <p>
+     * 示例 2：
+     * 输入：nums = [0]
+     * 输出：[[],[0]]
+     *
+     * @param nums
+     * @return
+     */
+    public List<List<Integer>> subsets(int[] nums) {
+        travelSubset(nums, 0);
+        return ans;
+    }
+
+    private void travelSubset(int[] nums, int startIndex) {
+        if (startIndex > nums.length) {
+            return;
+        }
+        // 以前都是收割叶子节点，这次是收割所有的节点，包括根节点和叶子节点，以及中间的节点。
+        ans.add(new ArrayList<>(path));
+        for (int i = startIndex; i < nums.length; i++) {
+            path.add(nums[i]);
+            travelSubset(nums, i + 1);
+            path.removeLast();
+        }
+    }
+
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        boolean[] used = new boolean[nums.length];
+        Arrays.sort(nums);
+        travelSubset2(nums, used, 0);
+        return ans;
+    }
+
+    private void travelSubset2(int[] nums, boolean[] used, int startIndex) {
+        ans.add(new ArrayList<>(path));
+        if (startIndex >= nums.length) {
+            return;
+        }
+        for (int i = startIndex; i < nums.length; i++) {
+            if (i > 0 && nums[i] == nums[i - 1] && !used[i - 1]) {
+                continue;
+            }
+            path.add(nums[i]);
+            used[i] = true;
+            travelSubset2(nums, used, i + 1);
+            used[i] = false;
+            path.removeLast();
+        }
+    }
+
+    /**
+     * 给你一个整数数组 nums ，找出并返回所有该数组中不同的递增子序列，递增子序列中 至少有两个元素 。你可以按 任意顺序 返回答案。
+     * 数组中可能含有重复元素，如出现两个整数相等，也可以视作递增序列的一种特殊情况。
+     * <p>
+     * 示例 1：
+     * 输入：nums = [4,6,7,7]
+     * 输出：[[4,6],[4,6,7],[4,6,7,7],[4,7],[4,7,7],[6,7],[6,7,7],[7,7]]
+     * <p>
+     * 示例 2：
+     * 输入：nums = [4,4,3,2,1]
+     * 输出：[[4,4]]
+     *
+     * @param nums
+     * @return
+     */
+    public List<List<Integer>> findSubsequences(int[] nums) {
+        // 区别于之前的，不能对nums进行排序了，不然就直接是递增序列了
+        travelSubsequences(nums, 0);
+        return ans;
+    }
+
+    private void travelSubsequences(int[] nums, int startIndex) {
+        if (path.size() >= 2) {
+            ans.add(new ArrayList<>(path));
+        }
+        if (startIndex >= nums.length) {
+            return;
+        }
+        // 直接在每一层进行层维度的剪枝，去掉重复的即可。
+        // 以前是组合场景，排完序，当且仅当，相邻的两个元素相等，且前一个元素未使用，遍历到后一个元素的时候，continue
+        HashSet<Integer> set = new HashSet<>();
+        for (int i = startIndex; i < nums.length; i++) {
+            if (!path.isEmpty() && path.peekLast() > nums[i]) {
+                continue;
+            }
+            if (set.contains(nums[i])) {
+                continue;
+            }
+            if (path.size() + nums.length - i < 2) {
+                continue;
+            }
+            set.add(nums[i]);
+            path.add(nums[i]);
+            travelSubsequences(nums, i + 1);
+            path.removeLast();
+
+        }
+
+    }
+
+
+    public List<List<Integer>> permute(int[] nums) {
+        boolean[] used = new boolean[nums.length];
+        travelPermute(nums, used);
+        return ans;
+    }
+
+    private void travelPermute(int[] nums, boolean[] used) {
+        if (path.size() == nums.length) {
+            ans.add(new ArrayList<>(path));
+            return;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (used[i])
+                continue;
+            path.add(nums[i]);
+            used[i] = true;
+            travelPermute(nums, used);
+            used[i] = false;
+            path.removeLast();
+        }
+    }
+
+    /**
+     * 输入：nums = [1,1,2]
+     * 输出：
+     * [[1,1,2],
+     * [1,2,1],
+     * [2,1,1]]
+     */
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        boolean[] used = new boolean[nums.length];
+        Arrays.sort(nums);
+        travelPermuteUnique(nums, used);
+        return ans;
+    }
+
+    private void travelPermuteUnique(int[] nums, boolean[] used) {
+        if (path.size() == nums.length) {
+            ans.add(new ArrayList<>(path));
+            return;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (used[i])
+                continue;
+            if (i > 0 && nums[i] == nums[i - 1] && !used[i - 1]) {
+                continue;
+            }
+            path.add(nums[i]);
+            used[i] = true;
+            travelPermuteUnique(nums, used);
+            used[i] = false;
+            path.removeLast();
+        }
+    }
+
+
+    List<List<Integer>> ans = new ArrayList<List<Integer>>();
+    LinkedList<Integer> path = new LinkedList<>();
+
+    List<String> ansLetter = new ArrayList<>();
+    StringBuilder sb = new StringBuilder();
+    HashMap<Character, String> phoneLetterTable = new HashMap<>();
+
+    List<List<String>> partitionList = new ArrayList<>();
+    LinkedList<String> partitionPath = new LinkedList<>();
 }
