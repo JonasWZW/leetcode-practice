@@ -55,6 +55,13 @@ public class DPAlgo {
         return dp[n];
     }
 
+    public static void printDp1(int[] dp) {
+        for (int i = 0; i < dp.length; i++) {
+            System.out.print(dp[i] + "\t");
+        }
+        System.out.println();
+    }
+
     public static void printDp(int[][] dp) {
         for (int i = 0; i < dp.length; i++) {
             for (int j = 0; j < dp[0].length; j++) {
