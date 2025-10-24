@@ -139,12 +139,108 @@ public class SubArrayDPAlgo {
             dp[0][j] = j;
         }
         for (int i = 1; i <= word1.length(); i++) {
-            
+            for (int j = 1; j <= word2.length(); j++) {
+                if (word1.charAt(i - 1) == word2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = Math.min(dp[i - 1][j], dp[i][j - 1]) + 1;
+                }
+            }
         }
-
-
+        DPAlgo.printDp(dp);
 
         return dp[word1.length()][word2.length()];
+    }
+
+
+    public int minDistance1(String word1, String word2) {
+        // dp[i][j] 表示，word1已第i个字符结尾的字符串和word2以第j个字符结尾的字符串达到相等的所需进行删除的次数。
+
+        int[][] dp = new int[word1.length() + 1][word2.length() + 1];
+        for (int i = 0; i <= word1.length(); i++) {
+            dp[i][0] = i;
+        }
+        for (int j = 0; j <= word2.length(); j++) {
+            dp[0][j] = j;
+        }
+        for (int i = 1; i <= word1.length(); i++) {
+            for (int j = 1; j <= word2.length(); j++) {
+                if (word1.charAt(i - 1) == word2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = Math.min(Math.min(dp[i - 1][j], dp[i][j - 1]), dp[i - 1][j - 1]) + 1;
+                }
+            }
+        }
+        DPAlgo.printDp(dp);
+
+        return dp[word1.length()][word2.length()];
+    }
+
+    /**
+     * 给你一个字符串 s ，请你统计并返回这个字符串中 回文子串 的数目。
+     * 回文字符串 是正着读和倒过来读一样的字符串。
+     * 子字符串 是字符串中的由连续字符组成的一个序列。
+     * <p>
+     * 示例 1：
+     * 输入：s = "abc"
+     * 输出：3
+     * 解释：三个回文子串: "a", "b", "c"
+     */
+    public int countSubstrings(String s) {
+        // dp[i][j] 表示从[i,j]的是否为回文串
+        boolean[][] dp = new boolean[s.length()][s.length()];
+        int sum = 0;
+        for (int i = 0; i < s.length(); i++) {
+            dp[i][i] = true;
+        }
+        for (int i = s.length() - 1; i >= 0; i--) {
+            for (int j = i + 1; j < s.length(); j++) {
+                if (s.charAt(j) == s.charAt(i)) {
+                    if (j - i <= 1) {
+                        sum++;
+                        dp[i][j] = true;
+                    } else {
+                        if (dp[i + 1][j - 1]) {
+                            sum++;
+                            dp[i][j] = true;
+                        }
+                    }
+                } else {
+                    dp[i][j] = false;
+                }
+            }
+        }
+        DPAlgo.printDp(dp);
+        return sum;
+    }
+
+    /**
+     * 给你一个字符串 s ，找出其中最长的回文子序列，并返回该序列的长度。
+     * 子序列定义为：不改变剩余字符顺序的情况下，删除某些字符或者不删除任何字符形成的一个序列。
+     * 示例 1：
+     * 输入：s = "bbbab"
+     * 输出：4
+     * 解释：一个可能的最长回文子序列为 "bbbb" 。
+     */
+    public int longestPalindromeSubseq(String s) {
+        // dp[i][j]表示[i,j]取自s，最长回文子序列的长度
+
+        int[][] dp = new int[s.length()][s.length()];
+        for (int i = 0; i < s.length(); i++) {
+            dp[i][i] = 1;
+        }
+        for (int i = s.length() - 1; i >= 0; i--) {
+            for (int j = i + 1; j < s.length(); j++) {
+                if (s.charAt(j) == s.charAt(i)) {
+                    dp[i][j] = dp[i + 1][j - 1] + 2;
+                } else {
+                    dp[i][j] = Math.max(dp[i + 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        DPAlgo.printDp(dp);
+        return dp[0][s.length() - 1];
     }
 
     public static void main(String[] args) {
@@ -152,6 +248,10 @@ public class SubArrayDPAlgo {
 //        System.out.println(subArrayDPAlgo.lengthOfLIS(new int[]{0, 1, 0, 3, 2, 3}));
 //        System.out.println(subArrayDPAlgo.findLengthOfLCIS(new int[]{1, 3, 5, 7}));
 //        System.out.println(subArrayDPAlgo.findLength(new int[]{1, 2, 3, 2, 1}, new int[]{3, 2, 1, 4, 7}));
-        System.out.println(subArrayDPAlgo.numDistinct("babgbag", "bag"));
+//        System.out.println(subArrayDPAlgo.numDistinct("babgbag", "bag"));
+//        System.out.println(subArrayDPAlgo.minDistance("leetcode", "etco"));
+
+//        System.out.println(subArrayDPAlgo.countSubstrings("abcb"));
+        System.out.println(subArrayDPAlgo.longestPalindromeSubseq("bbbab"));
     }
 }
