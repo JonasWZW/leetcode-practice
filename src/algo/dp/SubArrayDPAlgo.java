@@ -86,11 +86,72 @@ public class SubArrayDPAlgo {
         return ans;
     }
 
+    /**
+     * babgbag  bag
+     * 5个
+     *
+     * @param s
+     * @param t
+     * @return b   a   g
+     * 1   0   0   0
+     * b    1
+     * a    1
+     * b    1
+     * g    1
+     * b    1
+     * a    1
+     * g    1
+     */
+    public int numDistinct(String s, String t) {
+        int[][] dp = new int[s.length() + 1][t.length() + 1];
+        for (int i = 0; i <= s.length(); i++) {
+            dp[i][0] = 1;
+        }
+        for (int i = 1; i <= s.length(); i++) {
+            for (int j = 1; j <= t.length(); j++) {
+                if (s.charAt(i - 1) == t.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j];
+                } else {
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+        DPAlgo.printDp(dp);
+        return dp[s.length()][t.length()];
+    }
+
+    /**
+     * abc
+     * bbc
+     *
+     * @param word1
+     * @param word2
+     * @return
+     */
+    public int minDistance(String word1, String word2) {
+        // dp[i][j] 表示，word1已第i个字符结尾的字符串和word2以第j个字符结尾的字符串达到相等的所需进行删除的次数。
+
+        int[][] dp = new int[word1.length() + 1][word2.length() + 1];
+        for (int i = 0; i <= word1.length(); i++) {
+            dp[i][0] = i;
+        }
+        for (int j = 0; j <= word2.length(); j++) {
+            dp[0][j] = j;
+        }
+        for (int i = 1; i <= word1.length(); i++) {
+            
+        }
+
+
+
+        return dp[word1.length()][word2.length()];
+    }
 
     public static void main(String[] args) {
         SubArrayDPAlgo subArrayDPAlgo = new SubArrayDPAlgo();
 //        System.out.println(subArrayDPAlgo.lengthOfLIS(new int[]{0, 1, 0, 3, 2, 3}));
 //        System.out.println(subArrayDPAlgo.findLengthOfLCIS(new int[]{1, 3, 5, 7}));
-        System.out.println(subArrayDPAlgo.findLength(new int[]{1, 2, 3, 2, 1}, new int[]{3, 2, 1, 4, 7}));
+//        System.out.println(subArrayDPAlgo.findLength(new int[]{1, 2, 3, 2, 1}, new int[]{3, 2, 1, 4, 7}));
+        System.out.println(subArrayDPAlgo.numDistinct("babgbag", "bag"));
     }
 }
