@@ -1,9 +1,5 @@
 package algo.codetop;
 
-import javax.swing.*;
-import javax.swing.text.rtf.RTFEditorKit;
-import java.util.HashMap;
-import java.util.logging.Handler;
 
 public class ListNode {
     int val;
