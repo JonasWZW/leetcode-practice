@@ -67,6 +67,46 @@ public class Day10 {
         return ans;
     }
 
+    // 3 1 2 4
+    // 3 2 1 4
+    public void nextPermutation(int[] nums) {
+        if (nums == null || nums.length <= 1) return;
+
+        int i = nums.length - 2;
+
+        // 步骤1：从右向左找到第一个下降点
+        while (i >= 0 && nums[i] >= nums[i + 1]) {
+            i--;
+        }
+
+        // 步骤2：如果找到下降点，从右向左找到第一个大于nums[i]的数并交换
+        if (i >= 0) {
+            int j = nums.length - 1;
+            while (j > i && nums[j] <= nums[i]) {
+                j--;
+            }
+            swap(nums, i, j);
+        }
+
+        // 步骤3：反转i+1之后的部分
+        reverse(nums, i + 1, nums.length - 1);
+    }
+
+    private void swap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
+
+    private void reverse(int[] nums, int start, int end) {
+        while (start < end) {
+            swap(nums, start, end);
+            start++;
+            end--;
+        }
+    }
+
+
     public static void main(String[] args) {
         Day10 day10 = new Day10();
 //        int[] ints = day10.maxSlidingWindow(new int[]{1, 3, -1, -3, 5, 3, 6, 7}, 3);
