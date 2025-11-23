@@ -42,7 +42,6 @@ public class Day15 {
                     sb.append(curString);
                 }
                 //拼接
-                ss.push(str + sb.toString());
                 curString = str + sb.toString();
             }
         }
@@ -96,6 +95,6 @@ public class Day15 {
 
     public static void main(String[] args) {
         Day15 day15 = new Day15();
-        System.out.println(day15.decodeString("2[abc]3[cd]ef").equals("abcabccdcdcdef"));
+        System.out.println(day15.decodeString("3[a2[c]]"));
     }
 }
