@@ -191,7 +191,7 @@ public class Day26 {
         int i = left;
         int j = mid + 1;
         while (i <= mid && j <= right) {
-            if (nums[i] < nums[j]) {
+            if (nums[i] <= nums[j]) {
                 tmp[k++] = nums[i++];
             } else {
                 tmp[k++] = nums[j++];
